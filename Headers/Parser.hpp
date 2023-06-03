@@ -4,8 +4,19 @@
 
 #pragma once
 
+#if __cplusplus < 202002L
+#error This was only tested with C++20
+#else
+
+#include <unordered_map>
+#include <memory>
+#include <cassert>
+#include <string>
+
 #include "./Exceptions.hpp"
+#include "./Encoding.hpp"
 #include "./Buffer.hpp"
+#include "./Tree.hpp"
 
 /************************************************************************/
 
@@ -15,6 +26,9 @@ namespace HTMLParser
     {
     private:
         Buffer buffer;
+
+    private:
+        Tree::Document document;
 
     public:
         Parser(std::string_view);
@@ -43,6 +57,30 @@ namespace HTMLParser
     private:
         /* Doctype.hpp */
         void skipDoctype();
+
+    private:
+        /* CharacterReference.hpp */
+        static uint32_t namedReference(std::string_view);	/* internal */
+        char32_t getCharacterReference();
+
+    private:
+        /* CharacterData.hpp */
+        enum CharacterDataType { Normal, Replaceable, NonReplaceable };
+        std::string getCharacterData(CharacterDataType, std::string_view);
+
+    private:
+        /* Element.hpp */
+        std::unique_ptr<Tree::Text> getElementText();	/* internal */
+        static bool isVoidElement(std::string_view);	/* internal */
+        void elementContent(Tree::Element&);			/* internal */
+        void endTag(Tree::Element&);					/* internal */
+        std::unique_ptr<Tree::Element> openElement();	/* internal */
+        std::unique_ptr<Tree::Element> startTag();		/* internal */
+        std::unique_ptr<Tree::Element> getElement();
+
+    private:
+        /* Text.hpp */
+        std::unique_ptr<Tree::Text> getText();
     };
 }
 
@@ -51,8 +89,11 @@ namespace HTMLParser
 #include "./CharClasses.hpp"
 #include "./Conversions.hpp"
 #include "./Tokens.hpp"
+#include "./CharacterReference.hpp"
+#include "./CharacterData.hpp"
 
 #include "./Doctype.hpp"
+#include "./Element.hpp"
 
 /************************************************************************/
 
@@ -63,3 +104,7 @@ inline HTMLParser::Parser::Parser(std::string_view data)
     skipDoctype();
     skipCommentsAndSpace();
 }
+
+/************************************************************************/
+
+#endif /* __cplusplus */

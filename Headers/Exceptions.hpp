@@ -2,8 +2,6 @@
  * Copyright (C) 2023- Christian Stieber
  */
 
-#pragma once
-
 /************************************************************************/
 
 namespace HTMLParser

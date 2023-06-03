@@ -2,13 +2,6 @@
  * Copyright (C) 2023- Christian Stieber
  */
 
-#pragma once
-
-#include <string>
-#include <locale>
-#include <cassert>
-#include <cstring>
-
 /************************************************************************/
 /*
  * This supplies the character data for our parser.
@@ -46,37 +39,8 @@ namespace HTMLParser
 */
 
 inline HTMLParser::Buffer::Buffer(std::string_view data)
+    : buffer(UTF8Codecvt::convert(data))
 {
-    buffer.resize(data.size());
-
-    const char8_t* from=static_cast<const char8_t*>(static_cast<const void*>(data.data()));
-    const char8_t* from_end=static_cast<const char8_t*>(static_cast<const void*>(data.data()+data.size()));
-    const char8_t* from_next;
-    char32_t* to_next;
-
-    class Codecvt : public std::codecvt<char32_t, char8_t, std::mbstate_t>
-    {
-    public:
-        Codecvt(): codecvt(1) { }
-        virtual ~Codecvt() =default;
-    };
-
-    Codecvt codecvt;
-    Codecvt::state_type state;
-    memset(&state, 0, sizeof(state));
-    auto result=codecvt.in(state, from, from_end, from_next, buffer.data(), buffer.data()+buffer.size(), to_next);
-
-    if (result==std::codecvt_base::result::ok &&
-        from_next==from_end &&
-        mbsinit(&state))
-    {
-        buffer.resize(to_next-buffer.data());
-    }
-    else
-    {
-        assert(result!=std::codecvt_base::result::noconv);
-        throw ConversionException();
-    }
 }
 
 /************************************************************************/
