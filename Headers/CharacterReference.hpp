@@ -78,6 +78,10 @@ inline char32_t HTMLParser::Parser::getCharacterReference()
     }
     else
     {
+        auto name=getSomeString(&isCharacterReferenceName, false);
+        needs(!name.empty());
+        unicode=namedReference(name);
+        c=buffer.getChar();
     }
     if (c!=';')
     {

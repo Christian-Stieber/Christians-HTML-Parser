@@ -45,6 +45,7 @@ namespace HTMLParser
         static bool isUnquotedAttributeValue(char32_t);
         static bool isDoubleQuotedAttributeValue(char32_t);
         static bool isSingleQuotedAttributeValue(char32_t);
+        static bool isCharacterReferenceName(char32_t);
 
     private:
         /* Conversions.hpp */
