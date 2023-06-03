@@ -43,7 +43,7 @@ inline bool HTMLParser::Parser::skipString(const char* string)
 
 inline std::string HTMLParser::Parser::getSomeString(bool(*checker)(char32_t), bool allowReferences)
 {
-    std::string result;
+    std::u32string result;
     char32_t c;
     while (checker(c=buffer.getChar()))
     {
@@ -54,7 +54,7 @@ inline std::string HTMLParser::Parser::getSomeString(bool(*checker)(char32_t), b
         result.push_back(toLower(c));
     }
     buffer.ungetChar();
-    return result;
+    return UTF8Codecvt::convert(result);
 }
 
 /************************************************************************/
