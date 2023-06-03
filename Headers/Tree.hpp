@@ -26,6 +26,9 @@ namespace HTMLParser
 }
 
 /************************************************************************/
+/*
+ * Note: element and attribute names are in lowercase
+ */
 
 namespace HTMLParser
 {
@@ -37,6 +40,7 @@ namespace HTMLParser
             bool isVoid=false;
             std::string name;
             std::vector<std::unique_ptr<Node>> children;
+            std::unordered_map<std::string, std::string> attributes;
 
         public:
             Element() =default;

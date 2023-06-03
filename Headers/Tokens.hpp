@@ -37,19 +37,44 @@ inline bool HTMLParser::Parser::skipString(const char* string)
 
 /************************************************************************/
 /*
+ * Reads a string of characters matching "checker".
+ * If allowReferences is true, also allow character references.
+ */
+
+inline std::string HTMLParser::Parser::getSomeString(bool(*checker)(char32_t), bool allowReferences)
+{
+    std::string result;
+    char32_t c;
+    while (checker(c=buffer.getChar()))
+    {
+        if (allowReferences && c=='&')
+        {
+            c=getCharacterReference();
+        }
+        result.push_back(toLower(c));
+    }
+    buffer.ungetChar();
+    return result;
+}
+
+/************************************************************************/
+/*
  * Note: returns lowercase names, or empty if no tagname
  */
 
 inline std::string HTMLParser::Parser::getTagname()
 {
-    std::string name;
-    char32_t c;
-    while (isTagname(c=buffer.getChar()))
-    {
-        name.push_back(toLower(c));
-    }
-    buffer.ungetChar();
-    return name;
+    return getSomeString(&isTagname, false);
+}
+
+/************************************************************************/
+/*
+ * Note: returns lowercase names, or empty if no tagname
+ */
+
+inline std::string HTMLParser::Parser::getAttributeName()
+{
+    return getSomeString(isAttributeName, false);
 }
 
 /************************************************************************/

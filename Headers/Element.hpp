@@ -74,19 +74,25 @@ inline std::unique_ptr<HTMLParser::Tree::Element> HTMLParser::Parser::startTag()
     {
         element->isVoid=isVoidElement(element->name);
 
-        // ToDo: attributes
-
-        skipWhitespace();
+        while (true)
+        {
+            if (skipWhitespace())
+            {
+                auto attribute=getAttribute();
+                if (attribute.first.empty())
+                {
+                    break;
+                }
+                needs(element->attributes.insert(std::move(attribute)).second);
+            }
+        }
 
         auto c=buffer.getChar();
         if (element->isVoid && c=='/')
         {
             c=buffer.getChar();
         }
-        if (c!='>')
-        {
-            throw SyntaxException();
-        }
+        needs(c=='>');
     }
     return element;
 }
@@ -137,13 +143,10 @@ inline void HTMLParser::Parser::elementContent(HTMLParser::Tree::Element& elemen
 
 inline void HTMLParser::Parser::endTag(HTMLParser::Tree::Element& element)
 {
-    if (!(skipString("</") &&
+    needs(skipString("</") &&
           skipString(element.name.c_str()) &&
           (skipWhitespace(), true) &&
-          skipString(">")))
-    {
-        throw SyntaxException();
-    }
+          skipString(">"));
 }
 
 /************************************************************************/

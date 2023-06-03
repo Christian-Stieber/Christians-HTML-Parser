@@ -41,6 +41,10 @@ namespace HTMLParser
         /* CharClasses.hpp */
         static bool isWhitespace(char32_t);
         static bool isTagname(char32_t);
+        static bool isAttributeName(char32_t);
+        static bool isUnquotedAttributeValue(char32_t);
+        static bool isDoubleQuotedAttributeValue(char32_t);
+        static bool isSingleQuotedAttributeValue(char32_t);
 
     private:
         /* Conversions.hpp */
@@ -52,7 +56,9 @@ namespace HTMLParser
         bool skipComment();
         bool skipCommentsAndSpace();
         bool skipString(const char*);
+        std::string getSomeString(bool(*)(char32_t), bool);
         std::string getTagname();
+        std::string getAttributeName();
 
     private:
         /* Doctype.hpp */
@@ -67,6 +73,10 @@ namespace HTMLParser
         /* CharacterData.hpp */
         enum CharacterDataType { Normal, Replaceable, NonReplaceable };
         std::string getCharacterData(CharacterDataType, std::string_view);
+
+    private:
+        /* Attributes.hpp */
+        std::pair<std::string, std::string> getAttribute();
 
     private:
         /* Element.hpp */
@@ -93,6 +103,7 @@ namespace HTMLParser
 #include "./CharacterData.hpp"
 
 #include "./Doctype.hpp"
+#include "./Attribute.hpp"
 #include "./Element.hpp"
 
 /************************************************************************/
