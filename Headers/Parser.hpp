@@ -20,12 +20,18 @@
 #include <cassert>
 #include <string>
 
-#include "./Exceptions.hpp"
-#include "./Encoding.hpp"
-#include "./Buffer.hpp"
 #include "./Tree.hpp"
 
+#include "./Internal/Exceptions.hpp"
+#include "./Internal/Encoding.hpp"
+#include "./Internal/Buffer.hpp"
+
 /************************************************************************/
+/*
+ * Create a Parser object with the UTF-8 data.
+ *
+ * If successful (i.e. doesn't throw), get the document member.
+ */
 
 namespace HTMLParser
 {
@@ -34,15 +40,12 @@ namespace HTMLParser
     private:
         Buffer buffer;
 
-    private:
+    public:
         Tree::Document document;
 
     public:
         Parser(std::string_view);
         ~Parser() =default;
-
-    public:
-        void parse();
 
     private:
         /* CharClasses.hpp */
@@ -105,15 +108,15 @@ namespace HTMLParser
 
 /************************************************************************/
 
-#include "./CharClasses.hpp"
-#include "./Conversions.hpp"
-#include "./Tokens.hpp"
-#include "./CharacterReference.hpp"
-#include "./CharacterData.hpp"
+#include "./Internal/CharClasses.hpp"
+#include "./Internal/Conversions.hpp"
+#include "./Internal/Tokens.hpp"
+#include "./Internal/CharacterReference.hpp"
+#include "./Internal/CharacterData.hpp"
 
-#include "./Doctype.hpp"
-#include "./Attribute.hpp"
-#include "./Element.hpp"
+#include "./Internal/Doctype.hpp"
+#include "./Internal/Attribute.hpp"
+#include "./Internal/Element.hpp"
 
 /************************************************************************/
 
@@ -123,7 +126,8 @@ inline HTMLParser::Parser::Parser(std::string_view data)
     skipCommentsAndSpace();
     skipDoctype();
     skipCommentsAndSpace();
-    getElement();
+    document.html=getElement();
+    needs(document.html->name=="html");
 }
 
 /************************************************************************/

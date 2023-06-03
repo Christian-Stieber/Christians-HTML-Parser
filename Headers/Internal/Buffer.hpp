@@ -49,7 +49,9 @@ inline char32_t HTMLParser::Buffer::getChar()
 {
     if (index<buffer.size())
     {
-        return buffer[index++];
+        auto c=buffer[index++];
+        std::cout << (char)c << std::flush;
+        return c;
     }
     throw EOFException();
 }
