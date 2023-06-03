@@ -22,5 +22,6 @@ inline std::string HTMLParser::Parser::getCharacterData(HTMLParser::Parser::Char
             buffer.ungetChar();
             return UTF8Codecvt::convert(data);
         }
+        data.push_back(c);
     }
 }
