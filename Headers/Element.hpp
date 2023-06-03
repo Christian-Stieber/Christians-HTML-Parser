@@ -96,10 +96,10 @@ inline std::unique_ptr<HTMLParser::Tree::Element> HTMLParser::Parser::startTag()
 
 /************************************************************************/
 
-inline std::unique_ptr<HTMLParser::Tree::Text> HTMLParser::Parser::getElementText()
+inline std::unique_ptr<HTMLParser::Tree::Text> HTMLParser::Parser::getNormalElementText()
 {
     std::unique_ptr<HTMLParser::Tree::Text> result;
-    std::string text=getCharacterData(CharacterDataType::Normal, "");
+    std::string text=getNormalCharacterData();
     if (!text.empty())
     {
         result=std::make_unique<HTMLParser::Tree::Text>(std::move(text));
@@ -118,7 +118,7 @@ inline void HTMLParser::Parser::elementContent(HTMLParser::Tree::Element& elemen
         if (skipComment())
         {
         }
-        else if ((child=getElement()) || (child=getElementText()))
+        else if ((child=getElement()) || (child=getNormalElementText()))
         {
             element.children.push_back(std::move(child));
         }
@@ -148,6 +148,15 @@ inline void HTMLParser::Parser::endTag(HTMLParser::Tree::Element& element)
 
 /************************************************************************/
 
+inline void HTMLParser::Parser::getSpecialElementText(HTMLParser::Tree::Element& element, bool allowCharacterReferences)
+{
+    std::string data=getSpecialCharacterData(allowCharacterReferences, element.name.c_str());
+    auto text=std::make_unique<HTMLParser::Tree::Text>(std::move(data));
+    element.children.push_back(std::move(text));
+}
+
+/************************************************************************/
+
 inline std::unique_ptr<HTMLParser::Tree::Element> HTMLParser::Parser::getElement()
 {
     auto element=startTag();
@@ -155,7 +164,19 @@ inline std::unique_ptr<HTMLParser::Tree::Element> HTMLParser::Parser::getElement
     {
         if (!element->isVoid)
         {
-            elementContent(*element);
+            std::string_view name{element->name};
+            if (name=="script" || name=="style")
+            {
+                getSpecialElementText(*element, false);
+            }
+            else if (name=="title" || name=="textarea")
+            {
+                getSpecialElementText(*element, true);
+            }
+            else
+            {
+                elementContent(*element);
+            }
             endTag(*element);
         }
     }

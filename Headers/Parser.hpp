@@ -2,6 +2,13 @@
  * Copyright (C) 2023- Christian Stieber
  */
 
+/************************************************************************/
+/*
+ * https://www.w3.org/TR/2012/WD-html-markup-20120329/Overview.html
+ */
+
+/************************************************************************/
+
 #pragma once
 
 #if __cplusplus < 202002L
@@ -72,8 +79,8 @@ namespace HTMLParser
 
     private:
         /* CharacterData.hpp */
-        enum CharacterDataType { Normal, Replaceable, NonReplaceable };
-        std::string getCharacterData(CharacterDataType, std::string_view);
+        std::string getNormalCharacterData();
+        std::string getSpecialCharacterData(bool, const char*);
 
     private:
         /* Attributes.hpp */
@@ -81,7 +88,8 @@ namespace HTMLParser
 
     private:
         /* Element.hpp */
-        std::unique_ptr<Tree::Text> getElementText();	/* internal */
+        std::unique_ptr<HTMLParser::Tree::Text> getNormalElementText();		/* internal */
+        void getSpecialElementText(Tree::Element&, bool);	/* internal */
         static bool isVoidElement(std::string_view);	/* internal */
         void elementContent(Tree::Element&);			/* internal */
         void endTag(Tree::Element&);					/* internal */
