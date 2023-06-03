@@ -74,17 +74,14 @@ inline std::unique_ptr<HTMLParser::Tree::Element> HTMLParser::Parser::startTag()
     {
         element->isVoid=isVoidElement(element->name);
 
-        while (true)
+        while (skipWhitespace())
         {
-            if (skipWhitespace())
+            auto attribute=getAttribute();
+            if (attribute.first.empty())
             {
-                auto attribute=getAttribute();
-                if (attribute.first.empty())
-                {
-                    break;
-                }
-                needs(element->attributes.insert(std::move(attribute)).second);
+                break;
             }
+            needs(element->attributes.insert(std::move(attribute)).second);
         }
 
         auto c=buffer.getChar();
