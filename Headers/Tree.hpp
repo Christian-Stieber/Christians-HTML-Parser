@@ -40,7 +40,7 @@ namespace HTMLParser
 
         public:
             Element() =default;
-            virtual ~Element();
+            virtual ~Element() =default;
         };
     }
 }

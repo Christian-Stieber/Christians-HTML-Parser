@@ -151,12 +151,13 @@ inline void HTMLParser::Parser::endTag(HTMLParser::Tree::Element& element)
 inline std::unique_ptr<HTMLParser::Tree::Element> HTMLParser::Parser::getElement()
 {
     auto element=startTag();
-
-    if (!element->isVoid)
+    if (element)
     {
-        elementContent(*element);
-        endTag(*element);
+        if (!element->isVoid)
+        {
+            elementContent(*element);
+            endTag(*element);
+        }
     }
-
     return element;
 }

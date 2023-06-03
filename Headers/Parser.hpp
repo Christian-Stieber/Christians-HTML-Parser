@@ -103,6 +103,7 @@ inline HTMLParser::Parser::Parser(std::string_view data)
     skipCommentsAndSpace();
     skipDoctype();
     skipCommentsAndSpace();
+    getElement();
 }
 
 /************************************************************************/

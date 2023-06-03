@@ -18,5 +18,4 @@ inline void HTMLParser::Parser::skipDoctype()
     {
         c=buffer.getChar();
     }
-    buffer.ungetChar();
 }
