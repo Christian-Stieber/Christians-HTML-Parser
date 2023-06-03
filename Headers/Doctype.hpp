@@ -2,29 +2,18 @@
  * Copyright (C) 2023- Christian Stieber
  */
 
-#pragma once
-
-#include "./Tokens.hpp"
-
-/************************************************************************/
-
-namespace HTMLParser
-{
-    void skipDoctype(Buffer&);
-}
-
 /************************************************************************/
 /*
  * Note: I'm only checking for <!doctype html ...>
  */
 
-inline void HTMLParser::skipDoctype(Buffer& buffer)
+inline void HTMLParser::Parser::skipDoctype()
 {
-    needs(Tokens::skipString(buffer, "<!doctype") &&
-          Tokens::skipWhitespace(buffer) &&
-          Tokens::skipString(buffer, "html"));
+    needs(skipString("<!doctype") &&
+          skipWhitespace() &&
+          skipString("html"));
     auto c=buffer.getChar();
-    needs(c=='>' || CharClasses::isWhitespace(c));
+    needs(c=='>' || isWhitespace(c));
     while (c!='>')
     {
         c=buffer.getChar();

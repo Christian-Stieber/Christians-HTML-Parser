@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include "./Exceptions.hpp"
-
 #include <string>
 #include <locale>
 #include <cassert>
@@ -102,7 +100,7 @@ inline void HTMLParser::Buffer::ungetChar()
 
 /************************************************************************/
 /*
- * Saves the buffer position. Calls callback(Buffer&). If callback
+ * Saves the buffer position. Calls callback(). If callback
  * returns true, does nothing. If callback returns false, restores
  * position. Returns the callback result.
  */
@@ -110,7 +108,7 @@ inline void HTMLParser::Buffer::ungetChar()
 template <typename CALLBACK> bool HTMLParser::Buffer::savePosition(CALLBACK callback)
 {
     const auto saved=index;
-    auto result=callback(*this);
+    auto result=callback();
     if (!result)
     {
         index=saved;

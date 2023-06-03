@@ -2,33 +2,12 @@
  * Copyright (C) 2023- Christian Stieber
  */
 
-#pragma once
-
-#include "./Buffer.hpp"
-#include "./CharClasses.hpp"
-#include "./Conversions.hpp"
-
 /************************************************************************/
 
-namespace HTMLParser
-{
-    namespace Tokens
-    {
-        bool skipWhitespace(Buffer&);
-        bool skipComment(Buffer&);
-        bool skipCommentsAndSpace(Buffer&);
-        bool skipString(Buffer&, const char*);
-
-        std::string getTagname(Buffer&);
-    }
-}
-
-/************************************************************************/
-
-inline bool HTMLParser::Tokens::skipWhitespace(HTMLParser::Buffer& buffer)
+inline bool HTMLParser::Parser::skipWhitespace()
 {
     bool skipped=false;
-    while (CharClasses::isWhitespace(buffer.getChar()))
+    while (isWhitespace(buffer.getChar()))
     {
         skipped=true;
     }
@@ -41,12 +20,12 @@ inline bool HTMLParser::Tokens::skipWhitespace(HTMLParser::Buffer& buffer)
  * Note: turns characters to lowercase before matching
  */
 
-inline bool HTMLParser::Tokens::skipString(Buffer& buffer, const char* string)
+inline bool HTMLParser::Parser::skipString(const char* string)
 {
-    return buffer.savePosition([string](Buffer& buffer) mutable {
+    return buffer.savePosition([this, string]() mutable {
         while (*string!='\0')
         {
-            if (Conversions::toLower(buffer.getChar())!=*string)
+            if (toLower(buffer.getChar())!=*string)
             {
                 return false;
             }
@@ -61,13 +40,13 @@ inline bool HTMLParser::Tokens::skipString(Buffer& buffer, const char* string)
  * Note: returns lowercase names, or empty if no tagname
  */
 
-inline std::string HTMLParser::Tokens::getTagname(Buffer& buffer)
+inline std::string HTMLParser::Parser::getTagname()
 {
     std::string name;
     char32_t c;
-    while (CharClasses::isTagname(c=buffer.getChar()))
+    while (isTagname(c=buffer.getChar()))
     {
-        name.push_back(Conversions::toLower(c));
+        name.push_back(toLower(c));
     }
     buffer.ungetChar();
     return name;
@@ -78,13 +57,13 @@ inline std::string HTMLParser::Tokens::getTagname(Buffer& buffer)
  * Returns true if we've skipped a comment
  */
 
-inline bool HTMLParser::Tokens::skipComment(Buffer& buffer)
+inline bool HTMLParser::Parser::skipComment()
 {
-    if (!buffer.savePosition([](Buffer& buffer){ return skipString(buffer,"<!--"); }))
+    if (!buffer.savePosition([this](){ return skipString("<!--"); }))
     {
         return false;
     }
-    while (!skipString(buffer,"-->"))
+    while (!skipString("-->"))
     {
         buffer.getChar();
     }
@@ -93,10 +72,10 @@ inline bool HTMLParser::Tokens::skipComment(Buffer& buffer)
 
 /************************************************************************/
 
-inline bool HTMLParser::Tokens::skipCommentsAndSpace(Buffer& buffer)
+inline bool HTMLParser::Parser::skipCommentsAndSpace()
 {
     bool skipped=false;
-    while (skipWhitespace(buffer) || skipComment(buffer))
+    while (skipWhitespace() || skipComment())
     {
         skipped=true;
     }
