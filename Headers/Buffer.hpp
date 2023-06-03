@@ -1,4 +1,10 @@
+/*
+ * Copyright (C) 2023- Christian Stieber
+ */
+
 #pragma once
+
+#include "./Exceptions.hpp"
 
 #include <string>
 #include <locale>
@@ -17,10 +23,6 @@ namespace HTMLParser
 {
     class Buffer
     {
-    public:
-        class EOFException { };
-        class ConversionException { };
-
     private:
         std::u32string buffer;
         size_t index=0;
@@ -31,6 +33,10 @@ namespace HTMLParser
 
     public:
         char32_t getChar();
+        void ungetChar();
+
+    public:
+        template <typename CALLBACK> bool savePosition(CALLBACK);
     };
 }
 
@@ -76,11 +82,6 @@ inline HTMLParser::Buffer::Buffer(std::string_view data)
 }
 
 /************************************************************************/
-/*
- * Returns a single character.
- *
- * Throws EOFException.
- */
 
 inline char32_t HTMLParser::Buffer::getChar()
 {
@@ -89,4 +90,30 @@ inline char32_t HTMLParser::Buffer::getChar()
         return buffer[index++];
     }
     throw EOFException();
+}
+
+/************************************************************************/
+
+inline void HTMLParser::Buffer::ungetChar()
+{
+    assert(index>0);
+    index--;
+}
+
+/************************************************************************/
+/*
+ * Saves the buffer position. Calls callback(Buffer&). If callback
+ * returns true, does nothing. If callback returns false, restores
+ * position. Returns the callback result.
+ */
+
+template <typename CALLBACK> bool HTMLParser::Buffer::savePosition(CALLBACK callback)
+{
+    const auto saved=index;
+    auto result=callback(*this);
+    if (!result)
+    {
+        index=saved;
+    }
+    return result;
 }
