@@ -77,7 +77,7 @@ namespace HTMLParser
 
     private:
         /* CharacterReference.hpp */
-        static uint32_t namedReference(std::string_view);	/* internal */
+        static uint32_t namedReference(std::string_view);
         char32_t getCharacterReference();
 
     private:
@@ -91,13 +91,13 @@ namespace HTMLParser
 
     private:
         /* Element.hpp */
-        std::unique_ptr<HTMLParser::Tree::Text> getNormalElementText();		/* internal */
-        void getSpecialElementText(Tree::Element&, bool);	/* internal */
-        static bool isVoidElement(std::string_view);	/* internal */
-        void elementContent(Tree::Element&);			/* internal */
-        void endTag(Tree::Element&);					/* internal */
-        std::unique_ptr<Tree::Element> openElement();	/* internal */
-        std::unique_ptr<Tree::Element> startTag();		/* internal */
+        std::unique_ptr<HTMLParser::Tree::Text> getNormalElementText();
+        void getSpecialElementText(Tree::Element&, bool);
+        static bool isVoidElement(std::string_view);
+        void elementContent(Tree::Element&);
+        void endTag(Tree::Element&);
+        std::unique_ptr<Tree::Element> openElement();
+        std::unique_ptr<Tree::Element> startTag(bool&);
         std::unique_ptr<Tree::Element> getElement();
 
     private:

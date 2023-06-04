@@ -67,13 +67,11 @@ inline std::unique_ptr<HTMLParser::Tree::Element> HTMLParser::Parser::openElemen
  * Returns a newly allocated Element, or a nullptr if not an element. Throws on errors.
  */
 
-inline std::unique_ptr<HTMLParser::Tree::Element> HTMLParser::Parser::startTag()
+inline std::unique_ptr<HTMLParser::Tree::Element> HTMLParser::Parser::startTag(bool& closed)
 {
     auto element=openElement();
     if (element)
     {
-        element->isVoid=isVoidElement(element->name);
-
         while (skipWhitespace())
         {
             auto attribute=getAttribute();
@@ -84,12 +82,17 @@ inline std::unique_ptr<HTMLParser::Tree::Element> HTMLParser::Parser::startTag()
             needs(element->attributes.insert(std::move(attribute)).second);
         }
 
-        auto c=buffer.getChar();
-        if (element->isVoid && c=='/')
+        /*
+         * Note: my impression from the HTML description was that self-closing
+         * tags aren't allowed except for void elements. But, I've found them
+         * in real pages, so I'll just allow them everywhere.
+         */
+        if (skipString("/"))
         {
-            c=buffer.getChar();
+            closed=true;
         }
-        needs(c=='>');
+
+        needs(skipString(">"));
     }
     return element;
 }
@@ -159,10 +162,11 @@ inline void HTMLParser::Parser::getSpecialElementText(HTMLParser::Tree::Element&
 
 inline std::unique_ptr<HTMLParser::Tree::Element> HTMLParser::Parser::getElement()
 {
-    auto element=startTag();
+    bool closed=false;
+    auto element=startTag(closed);
     if (element)
     {
-        if (!element->isVoid)
+        if (!closed && !isVoidElement(element->name))
         {
             std::string_view name{element->name};
             if (name=="script" || name=="style")
