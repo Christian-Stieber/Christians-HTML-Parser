@@ -12,9 +12,17 @@ I still made this a separate project, so I can maybe use it in other
 projects as well. Thus, I'm somewhat interested in fixing problems
 with other pages... if it's not too much work.
 
+# STANDARDS COMPLIANCE
+
+* "what's that?"
+* it reads some semblance of HTML
+* I've tried following a W3C document that I found, but it seems
+  I didn't read it properly
+* there's been trial-and-error to get webpages to parse
+
 # KNOWN SHORTCOMINGS
 
-* reads HTML, not XHTML. Probably HTML5.
+* doesn't handle "tag soup" and other invalid markup; this might be complicated to do
 * the list of named character references is woefully incomplete
 * no information on errors
 * assumes UTF-8 input, and creates UTF-8 output
