@@ -123,6 +123,8 @@ inline void HTMLParser::Parser::elementContent(HTMLParser::Tree::Element& elemen
         }
         else if ((child=getElement()) || (child=getNormalElementText()))
         {
+            assert(child->parent==nullptr);
+            child->parent=&element;
             element.children.push_back(std::move(child));
         }
         else
@@ -155,6 +157,7 @@ inline void HTMLParser::Parser::getSpecialElementText(HTMLParser::Tree::Element&
 {
     std::string data=getSpecialCharacterData(allowCharacterReferences, element.name.c_str());
     auto text=std::make_unique<HTMLParser::Tree::Text>(std::move(data));
+    text->parent=&element;
     element.children.push_back(std::move(text));
 }
 

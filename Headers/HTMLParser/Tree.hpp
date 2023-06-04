@@ -14,8 +14,13 @@ namespace HTMLParser
 {
     namespace Tree
     {
+        class Element;
+
         class Node
         {
+        public:
+            Element* parent=nullptr;
+
         protected:
             Node() =default;
 
