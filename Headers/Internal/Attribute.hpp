@@ -27,12 +27,12 @@ inline std::pair<std::string, std::string> HTMLParser::Parser::getAttribute()
             switch(buffer.getChar())
             {
             case '"':
-                value=getSomeString(&isDoubleQuotedAttributeValue, true);
+                value=getSomeString(&isDoubleQuotedAttributeValue, false);
                 needs(buffer.getChar()=='"');
                 break;
 
             case '\'':
-                value=getSomeString(&isSingleQuotedAttributeValue, true);
+                value=getSomeString(&isSingleQuotedAttributeValue, false);
                 needs(buffer.getChar()=='\'');
                 break;
 
