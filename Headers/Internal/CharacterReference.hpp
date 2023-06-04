@@ -24,7 +24,8 @@ inline bool HTMLParser::Parser::namedReference(std::string_view name, char32_t& 
         { "lt", '<' },
         { "gt", '>' },
         { "quot", '"' },
-        { "nbsp", 0x00a0 }
+        { "nbsp", 0x00a0 },
+        { "copy", 0x00a9 }
     };
 
     auto iterator=names.find(name);
