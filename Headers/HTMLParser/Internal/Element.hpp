@@ -112,20 +112,29 @@ inline std::unique_ptr<HTMLParser::Tree::Text> HTMLParser::Parser::getNormalElem
 
 /************************************************************************/
 
+inline void HTMLParser::Parser::addChild(HTMLParser::Tree::Element& parent, std::unique_ptr<HTMLParser::Tree::Node> child)
+{
+    assert(child->parent==nullptr);
+    child->parent=&parent;
+    parent.children.push_back(std::move(child));
+}
+
+/************************************************************************/
+
 inline void HTMLParser::Parser::elementContent(HTMLParser::Tree::Element& element)
 {
     while (true)
     {
-        std::unique_ptr<HTMLParser::Tree::Node> child;
-
         if (skipComment())
         {
         }
-        else if ((child=getElement()) || (child=getNormalElementText()))
+        else if (auto child=getElement())
         {
-            assert(child->parent==nullptr);
-            child->parent=&element;
-            element.children.push_back(std::move(child));
+            addChild(element, std::move(child));
+        }
+        else if (auto child=getNormalElementText())
+        {
+            addChild(element, std::move(child));
         }
         else
         {
@@ -157,8 +166,7 @@ inline void HTMLParser::Parser::getSpecialElementText(HTMLParser::Tree::Element&
 {
     std::string data=getSpecialCharacterData(allowCharacterReferences, element.name.c_str());
     auto text=std::make_unique<HTMLParser::Tree::Text>(std::move(data));
-    text->parent=&element;
-    element.children.push_back(std::move(text));
+    addChild(element, std::move(text));
 }
 
 /************************************************************************/

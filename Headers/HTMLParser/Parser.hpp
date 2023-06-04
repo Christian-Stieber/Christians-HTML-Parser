@@ -96,6 +96,7 @@ namespace HTMLParser
 
     private:
         /* Element.hpp */
+        void addChild(Tree::Element&, std::unique_ptr<Tree::Node>);
         std::unique_ptr<HTMLParser::Tree::Text> getNormalElementText();
         void getSpecialElementText(Tree::Element&, bool);
         static bool isVoidElement(std::string_view);
