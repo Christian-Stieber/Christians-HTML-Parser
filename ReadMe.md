@@ -15,9 +15,7 @@ with other pages... if it's not too much work.
 # KNOWN SHORTCOMINGS
 
 * reads HTML, not XHTML. Probably HTML5.
-* the list of named character references is woefully incomplete; all
-  unknown references are just turned into U+FFFD ("REPLACEMENT
-  CHARACTER")
+* the list of named character references is woefully incomplete
 * no information on errors
 * assumes UTF-8 input, and creates UTF-8 output
 

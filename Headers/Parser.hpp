@@ -5,6 +5,9 @@
 /************************************************************************/
 /*
  * https://www.w3.org/TR/2012/WD-html-markup-20120329/Overview.html
+ *
+ * Note: it seems I wasn't very good at reading it properly, as I kept
+ * making adjustments to deal with actual websites...
  */
 
 /************************************************************************/
@@ -77,7 +80,9 @@ namespace HTMLParser
 
     private:
         /* CharacterReference.hpp */
-        static uint32_t namedReference(std::string_view);
+        static bool namedReference(std::string_view, char32_t&);
+        inline bool getNumericCharacterReference(char32_t&);
+        inline bool getNamedCharacterReference(char32_t&);
         char32_t getCharacterReference();
 
     private:
