@@ -130,7 +130,9 @@ inline void HTMLParser::Parser::elementContent(HTMLParser::Tree::Element& elemen
         }
         else if (auto child=getElement())
         {
+            auto& child_=*child;
             addChild(element, std::move(child));
+            gotElement(child_);
         }
         else if (auto child=getNormalElementText())
         {

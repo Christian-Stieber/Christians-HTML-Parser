@@ -121,6 +121,6 @@ int main()
     std::stringstream file;
     file << std::cin.rdbuf();
     HTMLParser::Parser parser(file.view());
-    printNode(0,*parser.document.html);
+    printNode(0,*parser.parse().html);
     return 0;
 }

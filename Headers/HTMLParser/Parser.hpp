@@ -44,11 +44,15 @@ namespace HTMLParser
         Buffer buffer;
 
     public:
-        Tree::Document document;
+        Parser(std::string_view);
+        virtual ~Parser() =default;
 
     public:
-        Parser(std::string_view);
-        ~Parser() =default;
+        Tree::Document parse();
+
+    public:
+        // you can override this for your own stuff
+        virtual void gotElement(const Tree::Element&) {}
 
     private:
         /* CharClasses.hpp */
@@ -129,11 +133,20 @@ namespace HTMLParser
 inline HTMLParser::Parser::Parser(std::string_view data)
     : buffer(data)
 {
+}
+
+/************************************************************************/
+
+inline HTMLParser::Tree::Document HTMLParser::Parser::parse()
+{
+    HTMLParser::Tree::Document document;
     skipCommentsAndSpace();
     skipDoctype();
     skipCommentsAndSpace();
     document.html=getElement();
     needs(document.html->name=="html");
+    gotElement(*document.html);
+    return document;
 }
 
 /************************************************************************/
