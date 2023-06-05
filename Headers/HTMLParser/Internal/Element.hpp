@@ -99,19 +99,6 @@ inline std::unique_ptr<HTMLParser::Tree::Element> HTMLParser::Parser::startTag(b
 
 /************************************************************************/
 
-inline std::unique_ptr<HTMLParser::Tree::Text> HTMLParser::Parser::getNormalElementText()
-{
-    std::unique_ptr<HTMLParser::Tree::Text> result;
-    std::string text=getNormalCharacterData();
-    if (!text.empty())
-    {
-        result=std::make_unique<HTMLParser::Tree::Text>(std::move(text));
-    }
-    return result;
-}
-
-/************************************************************************/
-
 inline void HTMLParser::Parser::addChild(HTMLParser::Tree::Element& parent, std::unique_ptr<HTMLParser::Tree::Node> child)
 {
     assert(child->parent==nullptr);
@@ -121,28 +108,16 @@ inline void HTMLParser::Parser::addChild(HTMLParser::Tree::Element& parent, std:
 
 /************************************************************************/
 
-inline void HTMLParser::Parser::elementContent(HTMLParser::Tree::Element& element)
+inline bool HTMLParser::Parser::getNormalElementText(HTMLParser::Tree::Element& parent)
 {
-    while (true)
+    std::string text=getNormalCharacterData();
+    if (!text.empty())
     {
-        if (skipComment())
-        {
-        }
-        else if (auto child=getElement())
-        {
-            auto& child_=*child;
-            addChild(element, std::move(child));
-            gotElement(child_);
-        }
-        else if (auto child=getNormalElementText())
-        {
-            addChild(element, std::move(child));
-        }
-        else
-        {
-            break;
-        }
+        auto child=std::make_unique<HTMLParser::Tree::Text>(std::move(text));
+        addChild(parent, std::move(child));
+        return true;
     }
+    return false;
 }
 
 /************************************************************************/
@@ -173,29 +148,35 @@ inline void HTMLParser::Parser::getSpecialElementText(HTMLParser::Tree::Element&
 
 /************************************************************************/
 
-inline std::unique_ptr<HTMLParser::Tree::Element> HTMLParser::Parser::getElement()
+inline bool HTMLParser::Parser::getElement(HTMLParser::Tree::Element& parent)
 {
     bool closed=false;
-    auto element=startTag(closed);
-    if (element)
+    auto elementPtr=startTag(closed);
+    if (elementPtr)
     {
-        if (!closed && !isVoidElement(element->name))
+        auto& element=*elementPtr;
+        addChild(parent, std::move(elementPtr));
+        startElement(element);
+        if (!closed && !isVoidElement(element.name))
         {
-            std::string_view name{element->name};
+            std::string_view name{element.name};
             if (name=="script" || name=="style")
             {
-                getSpecialElementText(*element, false);
+                getSpecialElementText(element, false);
             }
             else if (name=="title" || name=="textarea")
             {
-                getSpecialElementText(*element, true);
+                getSpecialElementText(element, true);
             }
             else
             {
-                elementContent(*element);
+                while (skipComment() || getElement(element) || getNormalElementText(element))
+                    ;
             }
-            endTag(*element);
+            endTag(element);
         }
+        endElement(element);
+        return true;
     }
-    return element;
+    return false;
 }

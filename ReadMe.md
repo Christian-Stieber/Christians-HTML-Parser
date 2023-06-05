@@ -18,6 +18,7 @@ I still made this a separate project, so I can maybe use it in other projects as
 
 # KNOWN SHORTCOMINGS
 
+* No CDATA... yet
 * doesn't handle "tag soup" and other invalid markup; this might be complicated to do
 * the list of named character references is woefully incomplete
 * no information on errors
@@ -56,7 +57,11 @@ class MyParser : public HTMLParser::Parser
 public:
    virtual ~MyParser() =default;
 
-   virtual void gotElement(const HTMLParser::Tree::Element& element) override
+   virtual void startElement(const HTMLParser::Tree::Element& element) override
+   {
+   }
+
+   virtual void endElement(const HTMLParser::Tree::Element& element) override
    {
    }
 };
@@ -64,4 +69,8 @@ public:
 
 This lets you build lookup structures as elements are created (of course, you can just walk through the tree afterwards instead).
 
-Note that you'll get the elements AFTER they have been fully read -- they will have all child nodes, and be linked to their parent element. Still, that parent element is still in the process of reading the children, so its children list may not be complete yet.
+`startElement` is called right after reading the start tag. Your element will have a `parent`, but children will not be available.
+
+`endElement` is called after reading the end tag. This means the children list will be completed as well.
+
+Note: for both calls, even the `html` element at the top of the document will have a `parent` pointer, which is pointing to an element with no name. This is a parsing artifact; it will not appear in the final document tree.

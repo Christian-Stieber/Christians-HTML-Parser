@@ -52,7 +52,8 @@ namespace HTMLParser
 
     public:
         // you can override this for your own stuff
-        virtual void gotElement(const Tree::Element&) {}
+        virtual void startElement(const Tree::Element&) {}
+        virtual void endElement(const Tree::Element&) {}
 
     private:
         /* CharClasses.hpp */
@@ -101,14 +102,13 @@ namespace HTMLParser
     private:
         /* Element.hpp */
         void addChild(Tree::Element&, std::unique_ptr<Tree::Node>);
-        std::unique_ptr<HTMLParser::Tree::Text> getNormalElementText();
+        bool getNormalElementText(Tree::Element&);
         void getSpecialElementText(Tree::Element&, bool);
         static bool isVoidElement(std::string_view);
-        void elementContent(Tree::Element&);
         void endTag(Tree::Element&);
         std::unique_ptr<Tree::Element> openElement();
         std::unique_ptr<Tree::Element> startTag(bool&);
-        std::unique_ptr<Tree::Element> getElement();
+        bool getElement(Tree::Element&);
 
     private:
         /* Text.hpp */
@@ -143,9 +143,22 @@ inline HTMLParser::Tree::Document HTMLParser::Parser::parse()
     skipCommentsAndSpace();
     skipDoctype();
     skipCommentsAndSpace();
-    document.html=getElement();
+
+    // This is rather hackish, but I wanted the Parser::startElement()
+    // to get an element that already has the parent... so getElement()
+    // needs a parent element.
+    {
+        Tree::Element root;
+        getElement(root);
+        assert(root.children.size()==1);
+
+        Tree::Element* child=dynamic_cast<Tree::Element*>(root.children.front().release());
+        assert(child!=nullptr);
+        child->parent=nullptr;
+        document.html=std::unique_ptr<Tree::Element>(child);
+    }
+
     needs(document.html->name=="html");
-    gotElement(*document.html);
     return document;
 }
 
