@@ -34,9 +34,9 @@ namespace HTMLParser
             const char8_t* from_next;
             char32_t* to_next;
 
-            auto result=in(state, from, from_end, from_next, output.data(), output.data()+output.size(), to_next);
+            auto res=in(state, from, from_end, from_next, output.data(), output.data()+output.size(), to_next);
 
-            if (result==std::codecvt_base::result::ok &&
+            if (res==ok &&
                 from_next==from_end &&
                 mbsinit(&state))
             {
@@ -45,7 +45,7 @@ namespace HTMLParser
             }
             else
             {
-                assert(result!=std::codecvt_base::result::noconv);
+                assert(res!=noconv);
                 throw ConversionException();
             }
         }
@@ -61,9 +61,9 @@ namespace HTMLParser
             char8_t* to_end=static_cast<char8_t*>(static_cast<void*>(output.data()+output.size()));
             char8_t* to_next;
 
-            auto result=out(state, input.data(), from_end, from_next, to, to_end, to_next);
+            auto res=out(state, input.data(), from_end, from_next, to, to_end, to_next);
 
-            if (result==std::codecvt_base::result::ok &&
+            if (res==ok &&
                 from_next==from_end &&
                 mbsinit(&state))
             {
@@ -72,7 +72,7 @@ namespace HTMLParser
             }
             else
             {
-                assert(result!=std::codecvt_base::result::noconv);
+                assert(res!=noconv);
                 throw ConversionException();
             }
         }

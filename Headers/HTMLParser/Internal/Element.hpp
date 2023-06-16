@@ -6,7 +6,7 @@
 
 inline bool HTMLParser::Parser::isVoidElement(std::string_view tag)
 {
-    static constexpr std::string_view voidTags[]={
+    static constexpr std::string_view voidTags[16]={
         /* make sure these are sorted */
         "area", "base", "br", "col", "command", "embed",
         "hr", "img", "input", "keygen", "link", "meta",

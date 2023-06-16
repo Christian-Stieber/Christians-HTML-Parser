@@ -27,7 +27,7 @@ namespace HTMLParser
         void ungetChar();
 
     public:
-        template <typename CALLBACK> bool savePosition(CALLBACK);
+        template <typename FUNC> bool savePosition(FUNC);
     };
 }
 
@@ -69,7 +69,7 @@ inline void HTMLParser::Buffer::ungetChar()
  * position. Returns the callback result.
  */
 
-template <typename CALLBACK> bool HTMLParser::Buffer::savePosition(CALLBACK callback)
+template <typename FUNC> bool HTMLParser::Buffer::savePosition(FUNC callback)
 {
     const auto saved=index;
     auto result=callback();
