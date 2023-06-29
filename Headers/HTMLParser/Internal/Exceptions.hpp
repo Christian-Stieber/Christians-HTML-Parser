@@ -10,7 +10,7 @@ namespace HTMLParser
     class ConversionException { };
     class SyntaxException { };
 
-    void needs(bool result)
+    inline void needs(bool result)
     {
         if (!result) throw SyntaxException();
     }
