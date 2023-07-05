@@ -156,7 +156,7 @@ inline bool HTMLParser::Parser::getElement(HTMLParser::Tree::Element& parent)
     {
         auto& element=*elementPtr;
         addChild(parent, std::move(elementPtr));
-        startElement(element);
+        auto closeFunction=startElement(element);
         if (!closed && !isVoidElement(element.name))
         {
             std::string_view name{element.name};
@@ -174,6 +174,10 @@ inline bool HTMLParser::Parser::getElement(HTMLParser::Tree::Element& parent)
                     ;
             }
             endTag(element);
+        }
+        if (closeFunction)
+        {
+            closeFunction(element);
         }
         endElement(element);
         return true;
