@@ -10,23 +10,19 @@ I still made this a separate project, so I can maybe use it in other projects as
 
 # STANDARDS COMPLIANCE
 
-* "what's that?"
-* it reads some semblance of HTML
-* I've tried following a W3C document that I found, but it seems
-  I didn't read it properly
-* there's been trial-and-error to get webpages to parse
+None. It works with some pages, and fails for others.
 
 # KNOWN SHORTCOMINGS
 
 * No CDATA... yet
 * doesn't handle "tag soup" and other invalid markup; this might be complicated to do
 * the list of named character references is woefully incomplete
-* no information on errors
+* no detail information on errors
 * assumes UTF-8 input, and creates UTF-8 output
 
 # STUFF THAT IT DOESN'T WANT TO DO
 
-* no query functions -- just walk through the tree yourself
+* no query functions -- just walk through the tree yourself, or use the callbacks
 * probably not a benchmark winner
 
 # USAGE
