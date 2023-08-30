@@ -25,7 +25,7 @@ inline bool HTMLParser::Parser::skipString(const char* string)
     return buffer.savePosition([this, string]() mutable {
         while (*string!='\0')
         {
-            if (toLower(buffer.getChar())!=*string)
+            if (toLower(buffer.getChar())!=static_cast<char32_t>(*string))
             {
                 return false;
             }

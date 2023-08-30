@@ -40,7 +40,9 @@ namespace HTMLParser
                 from_next==from_end &&
                 mbsinit(&state))
             {
-                output.resize(to_next-output.data());
+                const auto size=to_next-output.data();
+                assert(size>=0);
+                output.resize(static_cast<size_t>(size));
                 return output;
             }
             else
@@ -67,7 +69,9 @@ namespace HTMLParser
                 from_next==from_end &&
                 mbsinit(&state))
             {
-                output.resize(to_next-to);
+                auto size=to_next-to;
+                assert(size>=0);
+                output.resize(static_cast<size_t>(size));
                 return output;
             }
             else

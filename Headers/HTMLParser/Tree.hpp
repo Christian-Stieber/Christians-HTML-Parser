@@ -102,9 +102,9 @@ namespace HTMLParser
 
 /************************************************************************/
 
-inline const std::string* HTMLParser::Tree::Element::getAttribute(std::string_view name) const
+inline const std::string* HTMLParser::Tree::Element::getAttribute(std::string_view attrName) const
 {
-    auto iterator=attributes.find(name);
+    auto iterator=attributes.find(attrName);
     if (iterator!=attributes.end())
     {
         return &(iterator->second);

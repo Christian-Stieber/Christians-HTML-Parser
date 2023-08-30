@@ -25,8 +25,12 @@ inline bool HTMLParser::Parser::isTagname(char32_t c)
 inline bool HTMLParser::Parser::isAttributeName(char32_t c)
 {
     if (isWhitespace(c)) return false;
-    if ((c>=0x00 && c<=0x1f) || (c>=0x80 && c<=0x9f)) return false;
+
+    if (c<=0x1f) return false;
+    if (c>=0x80 && c<=0x9f) return false;
+
     if (c=='"' || c=='\'' || c=='>' || c=='/' || c=='=') return false;
+
     return true;
 }
 
