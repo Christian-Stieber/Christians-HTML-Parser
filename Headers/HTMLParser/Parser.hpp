@@ -58,7 +58,7 @@ namespace HTMLParser
         // If you return a function, it will be called when the element closes.
         virtual std::function<void(const Tree::Element&)> startElement(const Tree::Element&) { return nullptr; }
         // endElement() is called when the element closes
-        virtual void endElement(const Tree::Element&) {}
+        virtual void endElement(Tree::Element&) {}
 
     private:
         /* CharClasses.hpp */
