@@ -59,6 +59,11 @@ namespace HTMLParser
             virtual ~Element() =default;
 
         public:
+            std::string* getAttribute(std::string_view attrName)
+            {
+                return const_cast<std::string*>(const_cast<const Element*>(this)->getAttribute(attrName));
+            }
+
             const std::string* getAttribute(std::string_view) const;
         };
     }
