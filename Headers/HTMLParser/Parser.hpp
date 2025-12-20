@@ -110,7 +110,7 @@ namespace HTMLParser
         bool getNormalElementText(Tree::Element&);
         void getSpecialElementText(Tree::Element&, bool);
         static bool isVoidElement(std::string_view);
-        void endTag(Tree::Element&);
+        bool skipEndTag(Tree::Element&);
         std::unique_ptr<Tree::Element> openElement();
         std::unique_ptr<Tree::Element> startTag(bool&);
         bool getElement(Tree::Element&);

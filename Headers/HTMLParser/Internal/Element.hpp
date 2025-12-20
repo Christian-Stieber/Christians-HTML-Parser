@@ -129,12 +129,14 @@ inline bool HTMLParser::Parser::getNormalElementText(HTMLParser::Tree::Element& 
  * A ">" character.
  */
 
-inline void HTMLParser::Parser::endTag(HTMLParser::Tree::Element& element)
+inline bool HTMLParser::Parser::skipEndTag(HTMLParser::Tree::Element& element)
 {
-    needs(skipString("</") &&
-          skipString(element.name.c_str()) &&
-          (skipWhitespace(), true) &&
-          skipString(">"));
+    return buffer.savePosition([this, &element]() {
+        return(skipString("</") &&
+               skipString(element.name.c_str()) &&
+               (skipWhitespace(), true) &&
+               skipString(">"));
+    });
 }
 
 /************************************************************************/
@@ -157,23 +159,31 @@ inline bool HTMLParser::Parser::getElement(HTMLParser::Tree::Element& parent)
         auto& element=*elementPtr;
         addChild(parent, std::move(elementPtr));
         auto closeFunction=startElement(element);
-        if (!closed && !isVoidElement(element.name))
+        if (!closed)
         {
-            std::string_view name{element.name};
-            if (name=="script" || name=="style")
+            // Steam might close void elements, sometimes
+            if (isVoidElement(element.name))
             {
-                getSpecialElementText(element, false);
-            }
-            else if (name=="title" || name=="textarea")
-            {
-                getSpecialElementText(element, true);
+                skipEndTag(element);
             }
             else
             {
-                while (skipComment() || getElement(element) || getNormalElementText(element))
-                    ;
+                std::string_view name{element.name};
+                if (name=="script" || name=="style")
+                {
+                    getSpecialElementText(element, false);
+                }
+                else if (name=="title" || name=="textarea")
+                {
+                    getSpecialElementText(element, true);
+                }
+                else
+                {
+                    while (skipComment() || getElement(element) || getNormalElementText(element))
+                        ;
+                }
+                needs(skipEndTag(element));
             }
-            endTag(element);
         }
         if (closeFunction)
         {
