@@ -59,7 +59,8 @@ inline std::unique_ptr<HTMLParser::Tree::Element> HTMLParser::Parser::openElemen
 /*
  * A "<" character.
  * The element’s tag name.
- * Optionally, one or more attributes, each of which must be preceded by one or more space characters.
+ * Optionally, one or more attributes, each of which must be preceded by zero or more space characters.
+ * (Note: initially, I required a space between attributes. But. some Steam pages don't have them).
  * Optionally, one or more space characters.
  * Optionally, a "/" character, which may be present only if the element is a void element.
  * A ">" character.
@@ -72,27 +73,30 @@ inline std::unique_ptr<HTMLParser::Tree::Element> HTMLParser::Parser::startTag(b
     auto element=openElement();
     if (element)
     {
-        while (skipWhitespace())
+        while (true)
         {
-            auto attribute=getAttribute();
-            if (attribute.first.empty())
+            skipWhitespace();
+
+            /*
+             * Note: my impression from the HTML description was that self-closing
+             * tags aren't allowed except for void elements. But, I've found them
+             * in real pages, so I'll just allow them everywhere.
+             */
+            if (skipString("/>"))
+            {
+                closed=true;
+                break;
+            }
+
+            if (skipString(">"))
             {
                 break;
             }
+
+            auto attribute=getAttribute();
+            needs(!attribute.first.empty());
             needs(element->attributes.insert(std::move(attribute)).second);
         }
-
-        /*
-         * Note: my impression from the HTML description was that self-closing
-         * tags aren't allowed except for void elements. But, I've found them
-         * in real pages, so I'll just allow them everywhere.
-         */
-        if (skipString("/"))
-        {
-            closed=true;
-        }
-
-        needs(skipString(">"));
     }
     return element;
 }
